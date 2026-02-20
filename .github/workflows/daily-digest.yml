@@ -1,0 +1,26 @@
+name: Daily Kernel Fusion Research Digest
+
+on:
+  schedule:
+    # Runs every day at 15:00 UTC (7:00 AM PT / 8:00 AM PT during DST)
+    - cron: "0 15 * * *"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  send-digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run digest
+        env:
+          GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+          GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+          GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+          LOOKBACK_DAYS: "3"
+        run: python digest.py
